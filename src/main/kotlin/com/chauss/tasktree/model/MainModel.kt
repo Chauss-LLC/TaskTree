@@ -8,7 +8,7 @@ import tornadofx.*
 import java.time.LocalDate
 
 class Task(title: String, description: String? = null, deadline: LocalDate? = null) {
-    private val titleProperty = SimpleStringProperty(this, "title", title)
+    val titleProperty = SimpleStringProperty(this, "title", title)
     var title: String by titleProperty
 
     private val descriptionProperty = SimpleStringProperty(this, "description", description)
@@ -19,4 +19,9 @@ class Task(title: String, description: String? = null, deadline: LocalDate? = nu
 
     private val childrenProperty = SimpleListProperty(mutableListOf<Task>().asObservable())
     val children: ObservableList<Task> by childrenProperty
+}
+class TaskModel(task: Task) : ItemViewModel<Task>(task){
+    val title = bind(Task::title)
+    val description = bind(Task::description)
+    val deadline = bind(Task::deadline)
 }
