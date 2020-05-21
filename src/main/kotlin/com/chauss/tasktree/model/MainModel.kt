@@ -6,8 +6,9 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import tornadofx.*
 import java.time.LocalDate
+import java.util.*
 
-class Task(title: String, description: String? = null, deadline: LocalDate? = null) {
+class Task(title: String, description: String? = null, deadline: LocalDate? = null) : Observable(){
     val titleProperty = SimpleStringProperty(this, "title", title)
     var title: String by titleProperty
 
