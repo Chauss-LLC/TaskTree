@@ -1,12 +1,13 @@
 package com.chauss.tasktree.view
 
 import com.chauss.tasktree.model.*
+import javafx.beans.value.ObservableValue
 import javafx.scene.layout.Pane
 import tornadofx.*
 
 class MainView : View() {
     var rootTask = Task("MainTitle")
-    val model = TaskModel(rootTask)
+    val model = TaskModel(Task(""))
     var form = borderpane(){
         isVisible = false
         center {
@@ -27,6 +28,7 @@ class MainView : View() {
         bottom{
             hbox {
                 this.add(button("save") {
+                    enableWhen(model.dirty)
                     hboxConstraints {
                         marginRight = 200.0
                     }
@@ -45,7 +47,7 @@ class MainView : View() {
     private fun save(){
         model.commit()
         val task = model.item
-        rootTask = task
+        println("${model.title} / ${model.deadline} / ${model.description}")
         println("SAVING ${rootTask.title} / ${rootTask.deadline} / ${rootTask.description}")
     }
 
@@ -60,15 +62,19 @@ class MainView : View() {
 
     private fun drawCurrent(task: Task, coordinateX: Double, coordinateY: Double): Pane {
         val element = pane {
+            add(form)
             layoutX = coordinateX
             layoutY = coordinateY
             button{
                 this.text().bind(task.titleProperty)
                 action{
-                    form.layoutX = 350.0
+                    model.rebind {
+                        this.item = task
+                    }
+                    form.layoutX = 150.0
                     form.layoutY = 0.0
                     form.isVisible = true
-                    add(form)
+
                 }
             }
             setOnMouseDragged {
