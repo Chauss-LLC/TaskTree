@@ -4,11 +4,16 @@ import com.chauss.tasktree.model.TaskModel
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Paint
 import tornadofx.*
-import java.awt.Color
 
 class MainView : View() {
     var rootTask = Task("MainTitle")
     val model = TaskModel(Task(""))
+    private val linesLayout = pane()
+    private val buttonsLayout = pane()
+    override val root = stackpane {
+        add(linesLayout)
+        add(buttonsLayout)
+    }
     var form = borderpane {                            //форма заполнения описания и дедлайна задачи
         isVisible = false
         center {
@@ -53,13 +58,12 @@ class MainView : View() {
         model.commit()
         println("${model.title} / ${model.deadline} / ${model.description}")
     }
-
-    override val root = pane{}
     //отрисовываем все задачи
     init {
         val oneMore = Task("Second")
         oneMore.children.addAll(Task("1"), Task("2"))
         rootTask.children.addAll(Task("First"), oneMore, Task("Third"))
+
         drawCurrent(rootTask, 0.0, 0.0)
     }
 
@@ -84,19 +88,20 @@ class MainView : View() {
                     parent.relocate(it.sceneX - this.width / 2, it.sceneY - this.height / 2)
                 }
             }
+
         }
         root.add(element)
         // рисуем линии от родителя до детей
+        buttonsLayout.add(element)
         for ((i, child) in task.children.withIndex()) {
             val drewElement = drawCurrent(child, coordinateX + i * 100.0, coordinateY + 100.0)
-            with(root) {
-                line(coordinateX, coordinateY, coordinateX + i * 100, coordinateY + 100){
+            with(linesLayout) {
+                line(coordinateX, coordinateY, coordinateX + i * 100, coordinateY + 100) {
                     stroke = Paint.valueOf("#00008b")
                     startXProperty().bind(element.layoutXProperty())
                     startYProperty().bind(element.layoutYProperty())
                     endXProperty().bind(drewElement.layoutXProperty())
                     endYProperty().bind(drewElement.layoutYProperty())
-                    println("....")
                 }
             }
         }
