@@ -1,17 +1,21 @@
 package com.chauss.tasktree.view
-
 import com.chauss.tasktree.model.Task
 import com.chauss.tasktree.model.TaskModel
 import javafx.scene.layout.Pane
+import javafx.scene.paint.Paint
 import tornadofx.*
+import java.awt.Color
 
 class MainView : View() {
     var rootTask = Task("MainTitle")
     val model = TaskModel(Task(""))
-    var form = borderpane {
+    var form = borderpane {                            //форма заполнения описания и дедлайна задачи
         isVisible = false
         center {
             form {
+                style{
+                    backgroundColor += Paint.valueOf("moccasin")//мокасин
+                }
                 fieldset("Новая задача") {
                     field("Краткое описание") {
                         textfield(model.title)
@@ -38,24 +42,20 @@ class MainView : View() {
                 })
                 this.add(button("close") {
                     action {
-                        this@borderpane.isVisible = false
+                        this@borderpane.removeFromParent() // удаляем форму
                     }
                 })
             }
         }
     }
-
+    // сохраняем введённые данные из формы
     private fun save() {
         model.commit()
         println("${model.title} / ${model.deadline} / ${model.description}")
-        println("SAVING ${rootTask.title} / ${rootTask.deadline} / ${rootTask.description}")
     }
 
-    override val root = pane {
-        add(form)
-        setOnMouseClicked { form.isVisible = false }
-    }
-
+    override val root = pane{}
+    //отрисовываем все задачи
     init {
         val oneMore = Task("Second")
         oneMore.children.addAll(Task("1"), Task("2"))
@@ -68,16 +68,17 @@ class MainView : View() {
             layoutX = coordinateX
             layoutY = coordinateY
             button {
-                this.text().bind(task.titleProperty)
+                this.text().bind(task.titleProperty)//привязываем название кнопки к тасктайтлу
                 setOnMouseClicked {
-                    if (!it.isStillSincePress) return@setOnMouseClicked
+                    if (!it.isStillSincePress) return@setOnMouseClicked //пока клавиша нажата не ребиндим(происходит драгндроп)
+                    // ребиндим на выбранный таск
                     model.rebind {
                         this.item = task
                     }
                     form.layoutX = this@pane.layoutX
                     form.layoutY = this@pane.layoutY
                     form.isVisible = true
-
+                    root.add(form)
                 }
                 setOnMouseDragged {
                     parent.relocate(it.sceneX - this.width / 2, it.sceneY - this.height / 2)
@@ -85,18 +86,20 @@ class MainView : View() {
             }
         }
         root.add(element)
+        // рисуем линии от родителя до детей
         for ((i, child) in task.children.withIndex()) {
             val drewElement = drawCurrent(child, coordinateX + i * 100.0, coordinateY + 100.0)
             with(root) {
-                line(coordinateX, coordinateY, coordinateX + i * 100, coordinateY + 100) {
+                line(coordinateX, coordinateY, coordinateX + i * 100, coordinateY + 100){
+                    stroke = Paint.valueOf("#00008b")
                     startXProperty().bind(element.layoutXProperty())
                     startYProperty().bind(element.layoutYProperty())
                     endXProperty().bind(drewElement.layoutXProperty())
                     endYProperty().bind(drewElement.layoutYProperty())
+                    println("....")
                 }
             }
         }
         return element
     }
-
 }
