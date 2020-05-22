@@ -6,7 +6,12 @@ import tornadofx.*
 
 class MainView : View() {
     var rootTask = Task("MainTitle")
-    override val root = pane()
+    private val linesLayout = pane()
+    private val buttonsLayout = pane()
+    override val root = stackpane {
+        add(linesLayout)
+        add(buttonsLayout)
+    }
 
     init {
         val oneMore = Task("Second")
@@ -20,16 +25,17 @@ class MainView : View() {
         val element = pane {
             layoutX = coordinateX
             layoutY = coordinateY
-            label(task.title)
-            setOnMouseDragged {
-                relocate(it.sceneX - this.width / 2, it.sceneY - this.height / 2)
+            button(task.title) {
+                setOnMouseDragged {
+                    this@pane.relocate(it.sceneX - this.width / 2, it.sceneY - this.height / 2)
+                }
             }
 
         }
-        root.add(element)
+        buttonsLayout.add(element)
         for ((i, child) in task.children.withIndex()) {
             val drewElement = drawCurrent(child, coordinateX + i * 100.0, coordinateY + 100.0)
-            with(root) {
+            with(linesLayout) {
                 line(coordinateX, coordinateY, coordinateX + i * 100, coordinateY + 100) {
                     startXProperty().bind(element.layoutXProperty())
                     startYProperty().bind(element.layoutYProperty())
