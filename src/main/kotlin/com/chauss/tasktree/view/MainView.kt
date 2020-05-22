@@ -1,14 +1,14 @@
 package com.chauss.tasktree.view
 
-import com.chauss.tasktree.model.*
-import javafx.beans.value.ObservableValue
+import com.chauss.tasktree.model.Task
+import com.chauss.tasktree.model.TaskModel
 import javafx.scene.layout.Pane
 import tornadofx.*
 
 class MainView : View() {
     var rootTask = Task("MainTitle")
     val model = TaskModel(Task(""))
-    var form = borderpane(){
+    var form = borderpane {
         isVisible = false
         center {
             form {
@@ -36,22 +36,25 @@ class MainView : View() {
                         save()
                     }
                 })
-                this.add(button("close"){
-                    action{
+                this.add(button("close") {
+                    action {
                         this@borderpane.isVisible = false
                     }
                 })
             }
         }
     }
-    private fun save(){
+
+    private fun save() {
         model.commit()
-        val task = model.item
         println("${model.title} / ${model.deadline} / ${model.description}")
         println("SAVING ${rootTask.title} / ${rootTask.deadline} / ${rootTask.description}")
     }
 
-    override val root = pane()
+    override val root = pane {
+        add(form)
+        setOnMouseClicked { form.isVisible = false }
+    }
 
     init {
         val oneMore = Task("Second")
@@ -62,25 +65,24 @@ class MainView : View() {
 
     private fun drawCurrent(task: Task, coordinateX: Double, coordinateY: Double): Pane {
         val element = pane {
-            add(form)
             layoutX = coordinateX
             layoutY = coordinateY
-            button{
+            button {
                 this.text().bind(task.titleProperty)
-                action{
+                setOnMouseClicked {
+                    if (!it.isStillSincePress) return@setOnMouseClicked
                     model.rebind {
                         this.item = task
                     }
-                    form.layoutX = 150.0
-                    form.layoutY = 0.0
+                    form.layoutX = this@pane.layoutX
+                    form.layoutY = this@pane.layoutY
                     form.isVisible = true
 
                 }
+                setOnMouseDragged {
+                    parent.relocate(it.sceneX - this.width / 2, it.sceneY - this.height / 2)
+                }
             }
-            setOnMouseDragged {
-                    relocate(it.sceneX - this.width / 2, it.sceneY - this.height / 2)
-            }
-
         }
         root.add(element)
         for ((i, child) in task.children.withIndex()) {
