@@ -89,10 +89,10 @@ class MainView : View() {
             val drewElement = drawCurrent(child, coordinateX + i * 100.0, coordinateY + 100.0)
             with(root) {
                 line(coordinateX, coordinateY, coordinateX + i * 100, coordinateY + 100) {
-                    startXProperty().bind(element.layoutXProperty())
-                    startYProperty().bind(element.layoutYProperty())
-                    endXProperty().bind(drewElement.layoutXProperty())
-                    endYProperty().bind(drewElement.layoutYProperty())
+                    startXProperty().bind(element.layoutXProperty() + element.widthProperty() / 2.0)
+                    startYProperty().bind(element.layoutYProperty() + element.heightProperty() / 2.0)
+                    endXProperty().bind(drewElement.layoutXProperty() + drewElement.widthProperty() / 2.0)
+                    endYProperty().bind(drewElement.layoutYProperty() + drewElement.heightProperty() / 2.0)
                 }
             }
         }
