@@ -68,7 +68,13 @@ class MainView : View() {
             layoutX = coordinateX
             layoutY = coordinateY
             button {
+                var draggingFromX = 0.0
+                var draggingFromY = 0.0
                 this.text().bind(task.titleProperty)
+                setOnMousePressed {
+                    draggingFromX = it.sceneX
+                    draggingFromY = it.sceneY
+                }
                 setOnMouseClicked {
                     if (!it.isStillSincePress) return@setOnMouseClicked
                     model.rebind {
@@ -77,10 +83,12 @@ class MainView : View() {
                     form.layoutX = this@pane.layoutX
                     form.layoutY = this@pane.layoutY
                     form.isVisible = true
-
                 }
                 setOnMouseDragged {
-                    parent.relocate(it.sceneX - this.width / 2, it.sceneY - this.height / 2)
+                    parent.layoutX += it.sceneX - draggingFromX
+                    parent.layoutY += it.sceneY - draggingFromY
+                    draggingFromX = it.sceneX
+                    draggingFromY = it.sceneY
                 }
             }
         }
