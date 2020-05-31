@@ -85,8 +85,16 @@ class MainView : View() {
                     form.isVisible = true
                 }
                 setOnMouseDragged {
-                    parent.layoutX += it.sceneX - draggingFromX
-                    parent.layoutY += it.sceneY - draggingFromY
+                    if (parent.layoutX + it.sceneX - draggingFromX in 0.0..((currentWindow?.width
+                            ?: 0.0) - this.width - 18.0)
+                    ) {
+                        parent.layoutX += it.sceneX - draggingFromX
+                    }
+                    if (parent.layoutY + it.sceneY - draggingFromY in 0.0..((currentStage?.height
+                            ?: 0.0) - this.height * 2 - 18.0)
+                    ) {
+                        parent.layoutY += it.sceneY - draggingFromY
+                    }
                     draggingFromX = it.sceneX
                     draggingFromY = it.sceneY
                 }
