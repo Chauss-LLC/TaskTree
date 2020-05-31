@@ -8,7 +8,7 @@ import tornadofx.*
 import java.time.LocalDate
 import java.util.*
 
-class Task(title: String, description: String? = null, deadline: LocalDate? = null) : Observable(){
+class Task(title: String, description: String? = null, deadline: LocalDate? = null){
     val titleProperty = SimpleStringProperty(this, "title", title)
     var title: String by titleProperty
 
